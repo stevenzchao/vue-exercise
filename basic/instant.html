@@ -147,12 +147,32 @@
 </div>
 
 
-<div>
+<div id='app' >
+  {{text}}
 
+  <div id='app2' >
+    {{text2}}
+  </div>
 </div>
 
 
+
+
 <script>
+var app = new Vue({
+  el:'#app',
+  data:{ 
+    text: '這裡是一段話'
+  }
+});
+
+var app = new Vue({
+  el:'#app2',
+  data:{ 
+    text2: '這裡是一段話2'
+  }
+});
+
 // var data = {
 //   text: '這是一段話'
 // }

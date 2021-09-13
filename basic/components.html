@@ -147,12 +147,25 @@
 <div id="app">
   <div>
     你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 下。
+    你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 下。<br>
+    你已經點擊<count-component></count-component>下<br>
+    <count-component></count-component><br>
+    <count-component></count-component><br>
+    <count-component></count-component><br>
+
   </div>
 </div>
 
 <script>
 // 請在此撰寫 JavaScript
-
+Vue.component('count-component',{
+  data: function(){
+    return{
+      counter:0
+    }
+  },
+  template:'<button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 。'
+})
 
 var app = new Vue({
   el: '#app',
