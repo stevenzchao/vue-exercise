@@ -168,29 +168,30 @@
             <div class="card-header">
               <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                  <a class="nav-link active" href="#">全部</a>
+                  <a class="nav-link " :class="{'active':visibility=='all'}"  @click="visibility='all'"   href="#">全部</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link " href="#">進行中</a>
+                  <a class="nav-link " :class="{'active':visibility=='ing'}"  @click="visibility='ing'" href="#">進行中</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">已完成</a>
+                  <a class="nav-link" :class="{'active': visibility=='complete'}"  @click="visibility='complete'" href="#">已完成</a>
                 </li>
               </ul>
             </div>
             <ul class="list-group list-group-flush text-left">
-              <li class="list-group-item" v-for="(item,id) in todo"   >
-                <div class="d-flex ">
+              <li class="list-group-item" v-for="(item,id) in filteredTodo"  @dblclick="editTodo(item)" >
+                <div class="d-flex " v-if="item.id !=cacheTodo.id">
                   <div class="form-check">
                     <input type="checkbox" class="form-check-input" v-model="item.complete" :id="item.id" >
-                    <label class="form-check-label " :for="item.id" refs="wordzz">
+                    <label class="form-check-label " :for="item.id" refs="wordzz" :class="{'completed':item.complete}">
                       {{item.title}}
                     </label>
                   </div>
-                  <button type="button" class="close ml-auto" aria-label="Close" @click="removeTodo(id)">
+                  <button type="button" class="close ml-auto" aria-label="Close" @click="removeTodo(item)">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
+                <input type="text" class="form-control" v-if="item.id==cacheTodo.id" v-model="cacheTitle" @keyup.esc="cancelEdit()"  @keyup.enter="confirmEdit(item)">
               </li>
               <!-- <li class="list-group-item">
                 <div class="d-flex">
@@ -205,9 +206,9 @@
                   </button>
                 </div>
               </li> -->
-              <li class="list-group-item">
+              <!-- <li class="list-group-item">
                 <input type="text" class="form-control">
-              </li>
+              </li> -->
             </ul>
             <div class="card-footer d-flex justify-content-between">
               <span>還有 3 筆任務未完成</span>
@@ -228,7 +229,10 @@
                 complete: false
               }  
               
-              ]
+              ],
+              visibility:"",
+              cacheTodo:{},
+              cacheTitle:''
             },
             methods:{
               addTodo: function(){
@@ -239,17 +243,36 @@
                   return
                 }
 
-                toAdd["id"] =timestamp;
-                toAdd["title"] =value;
-                toAdd["complete"] =false;
+                toAdd.id =timestamp;
+                toAdd.title =value;
+                toAdd.complete =false;
 
                 // console.log(toAdd);
                 this.todo.push(toAdd)
                 
               },
-              removeTodo: function(key){
-                this.todo.splice(key,1);
+              removeTodo: function(tofuu){
+                var vm = this;
+                var newIndex =this.todo.findIndex(function(item,key){
+                  if(tofuu.id===item.id){
+                    newIndex=key
+                  }
+                })
+                this.todo.splice(newIndex,1);
                 
+              },
+              editTodo:function(item){
+                console.log(item)
+                this.cacheTodo = item;
+                this.cacheTitle = item.title;
+              },
+              cancelEdit:function(){
+                this.cacheTodo={};
+              },
+              confirmEdit:function(item){
+                item.title = this.cacheTitle;
+                this.cacheTitle='';
+                this.cacheTodo={};
               }
             },
             computed:{
@@ -257,6 +280,27 @@
                 if(item.complete){
                   this.$refs.wordzz.class.add("completed");
                 }
+              },
+              filteredTodo:function(){
+                if(this.visibility=='all'){
+                  return this.todo
+                }else if(this.visibility=='ing'){
+                  var newTodo =[];
+                  this.todo.forEach(function(item){
+                    if(!item.complete==true){
+                      newTodo.push(item);
+                    }
+                  });
+                  return newTodo
+                }else{
+                  var newTodo =[];
+                  this.todo.forEach(function(item){
+                    if(item.complete==true){
+                      newTodo.push(item);
+                    }
+                });
+                return newTodo;
+              }
               }
             }
 
