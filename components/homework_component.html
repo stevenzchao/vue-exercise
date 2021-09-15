@@ -137,8 +137,11 @@
         </div>
 
         <div id="app">
-          <select name="" id="" class="form-control mb-3">
-            <option value="">--- 請選擇城市 ---</option>
+          <select v-model="selectedCity" name="" id="" class="form-control mb-3">
+            <option  >--- 請選擇城市 ---</option>
+            <option v-for="(item,id) in cities" :value="item"  >
+              {{ item }}
+            </option>
           </select>
           <div>
             <h4>關注城市</h4>
@@ -162,7 +165,7 @@
 
           <hr>
           <div class="row">
-            <div class="col-sm-4" v-for="(item,id) in test" :key="item.SiteId">
+            <div class="col-sm-4" v-for="(item,id) in selectedCityList" :key="item.SiteId">
               <weather-block :data="item"></weather-block>
             </div>
           </div>
@@ -202,29 +205,29 @@
       data: function () {
         return {
           warnClass: this.data.Status,
-          warnClass1: ""
+          warnClass1: "",
         }
       },
       methods: {
         getStatusClass() {
-          // if (this.warnClass == "良好") {
-          //   this.warnClass1 = "status-aqi1"
-          // }else if(this.warnClass == "普通"){
-          //   this.warnClass1 = "status-aqi2"
-          // }else if(this.warnClass == "對敏感族群不健康"){
-          //   this.warnClass1 = "status-aqi3"
-          // }else if(this.warnClass == "對所有族群不健康"){
-          //   this.warnClass1 = "status-aqi4"
-          // }else if(this.warnClass == "非常不健康"){
-          //   this.warnClass1 = "status-aqi5"
-          // }else if(this.warnClass == "危害"){
-          //   this.warnClass1 = "status-aqi6"
-          // }
+          if (this.warnClass == "良好") {
+            this.warnClass1 = "status-aqi1"
+          } else if (this.warnClass == "普通") {
+            this.warnClass1 = "status-aqi2"
+          } else if (this.warnClass == "對敏感族群不健康") {
+            this.warnClass1 = "status-aqi3"
+          } else if (this.warnClass == "對所有族群不健康") {
+            this.warnClass1 = "status-aqi4"
+          } else if (this.warnClass == "非常不健康") {
+            this.warnClass1 = "status-aqi5"
+          } else if (this.warnClass == "危害") {
+            this.warnClass1 = "status-aqi6"
+          }
         },
-        warningColor:function(){
-      this.$emit('warnClass1', (this.warnClass1));
-      
-    }
+        warningColor: function () {
+          this.$emit('warnClass1', (this.warnClass1));
+
+        }
       },
       created: function () {
         console.log(this.warnClass)
@@ -238,6 +241,7 @@
     var app = new Vue({
       el: '#app',
       data: {
+        selectedCity:"--- 請選擇城市 ---",
         data: [],
         location: [],
         stared: [],
@@ -260,34 +264,54 @@
       created: function () {
         this.getData();
       },
-      computed:{
-        test(){
-          // const result = words.filter(word => word.length > 6);
-          const result = this.data.filter(function(a){
+      computed: {
+        test() {
+          const result = this.data.filter(function (a) {
 
-
-
-       if (a.Status == "良好") {
-            a["t"] = "status-aqi1"
-          }else if(a.Status == "普通"){
-            a["t"] = "status-aqi2"
-          }else if(a.Status == "對敏感族群不健康"){
-            a["t"] = "status-aqi3"
-          }else if(a.Status == "對所有族群不健康"){
-            a["t"] = "status-aqi4"
-          }else if(a.Status == "非常不健康"){
-            a["t"] = "status-aqi5"
-          }else if(a.Status == "危害"){
-            a["t"] = "status-aqi6"
-          }
+            if (a.Status == "良好") {
+              a["t"] = "status-aqi1"
+            } else if (a.Status == "普通") {
+              a["t"] = "status-aqi2"
+            } else if (a.Status == "對敏感族群不健康") {
+              a["t"] = "status-aqi3"
+            } else if (a.Status == "對所有族群不健康") {
+              a["t"] = "status-aqi4"
+            } else if (a.Status == "非常不健康") {
+              a["t"] = "status-aqi5"
+            } else if (a.Status == "危害") {
+              a["t"] = "status-aqi6"
+            }
 
 
             return a;
           });
-          
+
           return result;
         },
-      },
+        cities() {
+          let list = [];
+          this.data.forEach(function(item){
+          if(!list.includes(item.County)){
+            list.push(item.County);
+          }
+          console.log(list.length)
+          });
+          return list;
+        },
+        selectedCityList(){
+            let city =this.selectedCity;
+            let list = [];
+          const result = this.data.filter(function (a) {
+            if(a.County==city){
+              console.log(a)
+              list.push(a);
+          }
+          return list
+          });
+          console.log(result===list)
+          return list
+        }
+      }
     });
   </script>
   <!-- 
